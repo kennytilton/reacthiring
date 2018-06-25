@@ -137,9 +137,12 @@ function monthPageUrls( monthid) {
     let moDef = getMonthlyDef( monthid);
     console.assert( moDef, "moPageUrls got undef mid", monthid)
     // files are numbered off-by-one to match the page param on HN
-    return intRange( moDef.pgCount).map( pgOffset => `files/${monthid}/${pgOffset+1}.html`)
+    console.log("public????", process.env.PUBLIC_URL)
+    return intRange( moDef.pgCount).map( pgOffset =>
+         `${process.env.PUBLIC_URL}/hnpages/${monthid}/${pgOffset+1}.html`)
 }
 
+// {process.env.PUBLIC_URL + '/logo.png'}
 function getMonthlyDef( monthid) {
     for (let mn = 0; mn < window.gMonthlies.length; ++mn) {
         if (window.gMonthlies[mn].hnId === monthid)
