@@ -1,18 +1,14 @@
 import React, { Component } from 'react';
 import './App.css';
 import HelpList from './SharedView'
-import PickAMonth from './jobLoader'
+import MonthLoader from './MonthLoader'
 
 class App extends Component {
   render() {
     return (
         <div>
             <WHBanner/>
-            <div style={{
-                "margin" : "0px"
-                , "background" : "#ffb57d"}}>
-                <PickAMonth/>
-            </div>
+            <MonthLoader/>
         </div>
 
     );

@@ -17,17 +17,40 @@ const SEARCH_MO_IDX = 0;
 //         return (
 //             <div>
 
+const gMos = window.gMonthlies;
+
+class MonthLoader extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            monthid: gMos[SEARCH_MO_IDX].hnId
+        };
+    }
+    changeMonth(e) {
+        this.setState({monthid: e.target.value})
+    }
+    render () {
+        return <div style={{
+            "margin" : "0px"
+            , "background" : "#ffb57d"}}>
+            <PickAMonth
+                defmo={this.state.monthid}
+                onChange={(e)=>this.changeMonth(e)}/>
+            <JobLoader  monthid={this.state.monthid}/>
+        </div>
+    }
+}
 
 class PickAMonth extends Component {
     render () {
         return (
             <div className="pickAMonth">
                 <select className="searchMonth"
-                        value="17205865"
-                        onChange={()=> alert('load month')}>
-                    {window.gMonthlies.map( (m, x) =>
-                    <option value={m.hnId}
-                            selected={x===SEARCH_MO_IDX}>
+                        defaultValue={ this.props.defmo}
+                        onChange={(e)=>this.props.onChange(e)}>
+                    {gMos.map( (m, x) =>
+                    <option key={m.hnId}
+                            value={m.hnId}>
                         {m.desc}
                     </option>)}
                 </select>
@@ -35,6 +58,11 @@ class PickAMonth extends Component {
         )}
 }
 
+class JobLoader extends Component {
+    render () {
+        return <h3>job loader {this.props.monthid}</h3>
+    }
+}
 // function pickAMonth() {
 //     return div({class: "pickAMonth"}
 //         , select({
@@ -88,4 +116,4 @@ class PickAMonth extends Component {
 //         ))
 // }
 
-export default PickAMonth;
+export default MonthLoader;
