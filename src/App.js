@@ -1,14 +1,33 @@
 import React, { Component } from 'react';
-// import logo from './logo.svg';
 import './App.css';
+import HelpList from './SharedView'
+import PickAMonth from './jobLoader'
 
 class App extends Component {
   render() {
     return (
-      <WHBanner/>
+        <div>
+            <WHBanner/>
+            <div style={{
+                "margin" : "0px"
+                , "background" : "#ffb57d"}}>
+                <PickAMonth/>
+            </div>
+        </div>
+
     );
   }
 }
+
+// function WhoIsHiring() {
+//     return div(
+//         appBanner()
+//         , div( {style: "margin:0px; background:#ffb57d"}
+//             , pickAMonth()
+//             , jobListingLoader() // hidden iFrames where we load HN page for scraping
+//             , controlPanel()
+//             , jobList()))
+// }
 
 const appHelpEntry = [
     "Click any job header to show or hide the full listing."
@@ -82,47 +101,4 @@ class AppHelpToggle extends Component {
     }
 }
 
-class HelpList extends Component {
-    render() {
-        return (
-            <div hidden={ !this.props.helping}
-                 className={"help slideIn"}>
-                <div
-                    style={{"cursor" : "pointer"
-                        , "textAlign" : "right"
-                        , "marginRight" : "18px"}}
-                    onClick={() => this.props.helpCloseFn()}>
-                    X
-                </div>
-                <ul style= {{"listStyle" : "none"
-                    , "marginLeft" : "0"}}>
-
-                    {this.props.helpItems.map( e =>
-                        <li key={e}
-                            style={{"padding" : "0"
-                            , "margin" : "0 18px 9px 0"}}>{e}</li>)}
-                </ul>
-            </div>
-        )
-    }
-}
-
-// function appBanner () {
-//     return div(
-//         header(
-//             div( {
-//                     class: "about"
-//                     , onclick: mx=> mx.onOff = !mx.onOff
-//                     , title: "Usage hints, and credit where due."
-//                     , content: cF( c=> c.md.onOff? "hide" : "Pro tips")
-//                 }
-//                 , {
-//                     name: "appHelpToggle"
-//                     , onOff: cI( false)
-//                 })
-//             , div( { class: "headermain"}
-//                 , span( {class: "askhn"}, "Ask HN:")
-//                 , span( {class: "who"}, "Who&rsquo;s Hiring?")))
-//         , helpList(appHelpEntry,"appHelpToggle"))
-// }
 export default App;
