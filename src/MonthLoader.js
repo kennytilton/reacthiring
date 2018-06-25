@@ -23,12 +23,22 @@ const gMos = window.gMonthlies;
 class MonthLoader extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            monthid: gMos[SEARCH_MO_IDX].hnId
-        };
+        let moDef = gMos[SEARCH_MO_IDX]
+        this.state = moDef? {
+            monthid: moDef.hnId
+            , loadTask: unProcessedMonth(moDef.hnId)
+        } : {}
     }
     changeMonth(e) {
-        this.setState({monthid: e.target.value})
+        console.assert( e.target.value, "changemo not seeing monthid")
+        let monthid = e.target.value
+            , loadTask = unProcessedMonth(monthid);
+        console.assert(loadTask)
+
+        this.setState({
+            monthid: monthid
+            , loadTask: loadTask
+        })
     }
     render () {
         return <div style={{
@@ -38,7 +48,8 @@ class MonthLoader extends Component {
                 defmo={this.state.monthid}
                 monthid={this.state.monthid}
                 onChange={(e)=>this.changeMonth(e)}/>
-            <JobLoader  monthid={this.state.monthid}/>
+            <MonthJobsLoader
+                loadTask={ this.state.loadTask}/>
         </div>
     }
 }
@@ -57,66 +68,98 @@ class PickAMonth extends Component {
                         </option>)}
                 </select>
 
-                <ViewOnHN monthid={this.props.monthid}/>
+                <ViewOnHN
+                    monthid={this.props.monthid}
+                    altMsg="View monthly question on HN"/>
             </div>
         )}
 }
-class JobLoader extends Component {
-    render () {
-        return <h3>job loader {this.props.monthid}</h3>
+
+function unProcessedMonth( monthid) {
+    let urls = monthPageUrls( monthid);
+
+    console.log("chya", urls)
+    return {
+        monthid: monthid
+        , pageUrlsRemaining: urls
+        // most of these properties support a progress bar if we get that far
+        , pageUrlCount: urls.length // remember starting count
+        , jobsSeen: new Set() // used to de-dupe across pages; it happens, and we can get dup entire pages
+        , athings: [] // HN replies (job or not) are identified by class "aThing"
+        , athingParseCount: 0
+        , phase: "cullAthings"
     }
 }
-// function pickAMonth() {
-//     return div({class: "pickAMonth"}
-//         , select({
-//                 name: "searchMonth"
-//                 , class: "searchMonth"
-//                 , value: cI(gMonthlies[SEARCH_MO_IDX].hnId)
-//                 , onchange: (mx, e) => {
-//                     let pgr = mx.fmUp("progress")
-//                     ast(pgr)
-//                     pgr.value = 0
-//                     pgr.maxN = 0
-//                     pgr.seen = new Set()
-//                     pgr.hidden = false
-//                     mx.value = e.target.value
-//                 }
-//             }
-//             // --- start with this if initial load is too slow----
-//             // , option( {value: "none"
-//             //         , selected: "selected"
-//             //         , disabled: "disabled"}
-//             //     , "Pick a month. Any month.")
-//             , gMonthlies.map((m, x) => option({
-//                     value: m.hnId
-//                     , selected: x === SEARCH_MO_IDX ? "selected" : null
-//                 }
-//                 , m.desc)))
-//
-//         , div({style: hzFlexWrapCentered}
-//             , viewOnHN(cF(c => `https://news.ycombinator.com/item?id=${c.md.fmUp("searchMonth").value}`)
-//                 , {hidden: cF(c => !c.md.fmUp("searchMonth").value)})
-//             , span({
-//                 style: "color: #fcfcfc; margin: 0 12px 0 12px"
-//                 , hidden: cF(c => !c.md.fmUp("searchMonth").value)
-//                 , content: cF(c => {
-//                     let pgr = c.md.fmUp("progress")
-//                         , jobs = c.md.fmUp("jobLoader").jobs || [];
-//                     return pgr.hidden ? "Total jobs: " + jobs.length
-//                         : "Parsing: " + PARSE_CHUNK_SIZE * pgr.value
-//                 })
-//             })
-//
-//             , progress({
-//                 max: cF(c => c.md.maxN + "")
-//                 , hidden: cF(c => !c.md.fmUp("searchMonth").value)
-//                 , value: cI(0)
-//             }, {
-//                 name: "progress"
-//                 , maxN: cI(0)
-//                 , seen: cI(new Set())
-//             })
-//         ))
-// }
+
+class MonthJobsLoader extends Component {
+    render () {
+        console.log("mojload props!", this.props)
+        console.assert(this.props.loadTask)
+        return (
+            <div>
+                {this.props.loadTask.pageUrlsRemaining[0] ?
+                    <PageLoader loadTask={this.props.loadTask}/> : <span> "no mas pages"</span>}
+            </div>
+        )
+    }
+}
+
+class PageLoader extends Component {
+    render () {
+        console.assert(this.props.loadTask.pageUrlsRemaining[0], "no url!")
+        console.log("loading url", this.props.loadTask.pageUrlsRemaining[0])
+        return (
+            <iframe src={this.props.loadTask.pageUrlsRemaining[0]}
+                    title="HN Page Scraper"
+                    onLoad={()=> console.log("booya!",this.props.loadTask.pageUrlsRemaining[0])}/>
+        )
+    }
+}
+
+// (defn mk-page-loader []
+// (fn [task]
+// (assert (first (:page-urls-remaining task)))
+// [:iframe {:src     (first (:page-urls-remaining task))
+// :on-load #(let [rem-pages (rest (:page-urls-remaining task))]
+//     (reset! month-load
+//     (merge task {
+//     :athings             (into (:athings task)
+//         (job-page-athings (.-target %)))
+//     :page-urls-remaining rem-pages
+//     :phase               (if (empty? rem-pages)
+//             :parse-jobs
+//         (:phase task))})))}]))
+
+// --- utilities ---------------------------------------------------------
+
+
+function monthPageUrls( monthid) {
+    let moDef = getMonthlyDef( monthid);
+    console.assert( moDef, "moPageUrls got undef mid", monthid)
+    // files are numbered off-by-one to match the page param on HN
+    return intRange( moDef.pgCount).map( pgOffset => `files/${monthid}/${pgOffset+1}.html`)
+}
+
+function getMonthlyDef( monthid) {
+    for (let mn = 0; mn < window.gMonthlies.length; ++mn) {
+        if (window.gMonthlies[mn].hnId === monthid)
+            return window.gMonthlies[mn];
+    }
+    console.assert(false, "gModef no find mid", monthid)
+}
+
+function intRange( start, end) {
+    if (start === undefined) {
+        return []
+    } else if ( end === undefined) {
+        return intRange( 0, start)
+    } else {
+        let r = []
+        for (let n = start; n < end; ++n) {
+            r.push(n)
+        }
+        return r
+    }
+}
 
 export default MonthLoader;
