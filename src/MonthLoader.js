@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {ViewOnHN} from "./SharedView";
 
 const SEARCH_MO_IDX = 0;
 
@@ -35,6 +36,7 @@ class MonthLoader extends Component {
             , "background" : "#ffb57d"}}>
             <PickAMonth
                 defmo={this.state.monthid}
+                monthid={this.state.monthid}
                 onChange={(e)=>this.changeMonth(e)}/>
             <JobLoader  monthid={this.state.monthid}/>
         </div>
@@ -49,15 +51,16 @@ class PickAMonth extends Component {
                         defaultValue={ this.props.defmo}
                         onChange={(e)=>this.props.onChange(e)}>
                     {gMos.map( (m, x) =>
-                    <option key={m.hnId}
-                            value={m.hnId}>
-                        {m.desc}
-                    </option>)}
+                        <option key={m.hnId}
+                                value={m.hnId}>
+                            {m.desc}
+                        </option>)}
                 </select>
+
+                <ViewOnHN monthid={this.props.monthid}/>
             </div>
         )}
 }
-
 class JobLoader extends Component {
     render () {
         return <h3>job loader {this.props.monthid}</h3>

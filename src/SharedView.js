@@ -26,3 +26,14 @@ class HelpList extends Component {
 }
 
 export default HelpList;
+
+export class ViewOnHN extends Component {
+    render() {
+        return(
+            <a href={`https://news.ycombinator.com/item?id=${this.props.monthid}`}>
+                <img src={"%PUBLIC_URL%/favicon.ico"}/>
+            </a>
+        )
+    }
+}
+
