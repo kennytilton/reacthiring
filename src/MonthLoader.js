@@ -23,6 +23,7 @@ const gMos = window.gMonthlies;
 class MonthLoader extends Component {
     constructor(props) {
         super(props);
+        this.taskUpdater = this.taskUpdater.bind(this);
         let moDef = gMos[SEARCH_MO_IDX]
         this.state = moDef? {
             monthid: moDef.hnId
@@ -40,7 +41,14 @@ class MonthLoader extends Component {
             , loadTask: loadTask
         })
     }
+    taskUpdater( updatedTask) {
+        console.log("updtask!!! new", updatedTask.athings.length
+            , "old", this.state.loadTask.athings.length)
+        this.setState( Object.assign( this.state
+        , { loadTask: updatedTask}))
+    }
     render () {
+
         return <div style={{
             "margin" : "0px"
             , "background" : "#ffb57d"}}>
@@ -49,7 +57,8 @@ class MonthLoader extends Component {
                 monthid={this.state.monthid}
                 onChange={(e)=>this.changeMonth(e)}/>
             <MonthJobsLoader
-                loadTask={ this.state.loadTask}/>
+                loadTask={ this.state.loadTask}
+                taskUpdater={ this.taskUpdater }/> 
         </div>
     }
 }
@@ -95,10 +104,18 @@ class MonthJobsLoader extends Component {
     render () {
         console.log("mojload props!", this.props)
         console.assert(this.props.loadTask)
+        console.assert(this.props.taskUpdater, "moloader")
+        console.log("mojload updater!", this.props.taskUpdater)
+        let mldUpdater = this.props.taskUpdater;
+
+
         return (
             <div>
                 {this.props.loadTask.pageUrlsRemaining[0] ?
-                    <PageLoader loadTask={this.props.loadTask}/> : <span> "no mas pages"</span>}
+                    <PageLoader
+                        loadTask={this.props.loadTask}
+                        taskUpdater={(tsk)=> mldUpdater(tsk)}
+                    /> : <span> "no mas pages"</span>}
             </div>
         )
     }
@@ -108,27 +125,37 @@ class PageLoader extends Component {
     render () {
         console.assert(this.props.loadTask.pageUrlsRemaining[0], "no url!")
         console.log("loading url", this.props.loadTask.pageUrlsRemaining[0])
+        console.assert(this.props.taskUpdater, "pgloader")
+        console.log("pglupd!!!", this.props.taskUpdater, "pgloader")
+        let pglUpdater = this.props.taskUpdater;
         return (
             <iframe src={this.props.loadTask.pageUrlsRemaining[0]}
                     title="HN Page Scraper"
-                    onLoad={()=> console.log("booya!",this.props.loadTask.pageUrlsRemaining[0])}/>
+                    onLoad={(e)=>
+                        pglUpdater(scrapeAthings( e.target, this.props.loadTask))}/>
         )
     }
 }
 
-// (defn mk-page-loader []
-// (fn [task]
-// (assert (first (:page-urls-remaining task)))
-// [:iframe {:src     (first (:page-urls-remaining task))
-// :on-load #(let [rem-pages (rest (:page-urls-remaining task))]
-//     (reset! month-load
-//     (merge task {
-//     :athings             (into (:athings task)
-//         (job-page-athings (.-target %)))
-//     :page-urls-remaining rem-pages
-//     :phase               (if (empty? rem-pages)
-//             :parse-jobs
-//         (:phase task))})))}]))
+function scrapeAthings( iframe, loadTask) {
+    let pageRem = loadTask.pageUrlsRemaining.slice(1);
+    console.log("scrape sees rem", pageRem.length);
+    return Object.assign(loadTask,
+        {
+            athings: loadTask.athings.concat(jobPageAthings(iframe))
+            , pageUrlsRemaining: pageRem
+            , phase: pageRem > 0 ? loadTask.phase : "parse-jobs"
+        })
+}
+const PARSE_CHUNK_SIZE = 30;
+
+function jobPageAthings( iframe) {
+    let hnBody = iframe.contentDocument.getElementsByTagName('body')[0];
+    console.assert(hnBody);
+    let all = Array.prototype.slice.call(hnBody.querySelectorAll('.athing'));
+    console.log("page has athings=", all.length);
+    return all.slice( PARSE_CHUNK_SIZE);
+}
 
 // --- utilities ---------------------------------------------------------
 
@@ -137,7 +164,6 @@ function monthPageUrls( monthid) {
     let moDef = getMonthlyDef( monthid);
     console.assert( moDef, "moPageUrls got undef mid", monthid)
     // files are numbered off-by-one to match the page param on HN
-    console.log("public????", process.env.PUBLIC_URL)
     return intRange( moDef.pgCount).map( pgOffset =>
          `${process.env.PUBLIC_URL}/hnpages/${monthid}/${pgOffset+1}.html`)
 }
