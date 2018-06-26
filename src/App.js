@@ -3,12 +3,25 @@ import './App.css';
 import HelpList from './SharedView'
 import MonthLoader from './MonthLoader'
 import store from "./js/store/index";
-import {addArticle} from "./js/actions/index"
+import {toggleAppHelp} from "./js/actions/index"
+
+import {connect} from 'react-redux';
+import { Provider } from 'react-redux'
 
 function clg(...args) {
     console.log(...args);
 }
 
+// class App extends Component {
+//
+//     render() {
+//         return (
+//             <Provider store={store}>
+//                 <MainAppContainer />
+//             </Provider>
+//         )
+//     }
+// }
 
 class App extends Component {
 
@@ -18,15 +31,17 @@ class App extends Component {
 
       store.subscribe(() => console.log('Look ma, Redux!!'))
 
-      store.dispatch( addArticle({ name: 'React Redux Tutorial for Beginners', id: 1 }) )
+      //store.dispatch( addArticle({ name: 'React Redux Tutorial for Beginners', id: 1 }) )
 
     return (
-        <div>
-            <WHBanner/>
-            <MonthLoader/>
-            <ControlPanel/>
-            <JobList/>
-        </div>
+        <Provider store={store}>
+            <div>
+                <RdxBanner/>
+                <MonthLoader/>
+                <ControlPanel/>
+                <JobList/>
+            </div>
+        </Provider>
 
     );
   }
@@ -93,8 +108,8 @@ class WHBanner extends Component {
             <div>
                 <header>
                     <AppHelpToggle
-                        helping={this.state.appHelping}
-                        onClick={() => this.toggleAppHelp()}
+                        helping={this.props.helping}
+                        onClick={() => this.props.onHelpClick()}
                     />
 
                     <div className="headermain">
@@ -103,14 +118,34 @@ class WHBanner extends Component {
                     </div>
                 </header>
                 <HelpList
-                    helping={this.state.appHelping}
+                    helping={this.props.helping}
                     helpItems={appHelpEntry}
-                    helpCloseFn={() => this.toggleAppHelp()}
+                    helpCloseFn={() => this.props.onHelpClick()}
                 />
             </div>
         );
     }
 }
+
+const mapStateToProps = state => {
+    return {
+        helping: state.app.helping
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onHelpClick: () => {
+            dispatch(toggleAppHelp())
+        }
+    }
+}
+
+const RdxBanner = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(WHBanner)
+
 
 class AppHelpToggle extends Component {
     render() {
