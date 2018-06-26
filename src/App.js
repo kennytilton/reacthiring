@@ -2,9 +2,24 @@ import React, { Component } from 'react';
 import './App.css';
 import HelpList from './SharedView'
 import MonthLoader from './MonthLoader'
+import store from "./js/store/index";
+import {addArticle} from "./js/actions/index"
+
+function clg(...args) {
+    console.log(...args);
+}
+
 
 class App extends Component {
+
+
   render() {
+      clg( "appbam", store.getState())
+
+      store.subscribe(() => console.log('Look ma, Redux!!'))
+
+      store.dispatch( addArticle({ name: 'React Redux Tutorial for Beginners', id: 1 }) )
+
     return (
         <div>
             <WHBanner/>
