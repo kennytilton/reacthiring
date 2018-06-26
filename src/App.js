@@ -3,7 +3,7 @@ import './App.css';
 import HelpList from './SharedView'
 import MonthLoader from './MonthLoader'
 import store from "./js/store/index";
-import {toggleAppHelp} from "./js/actions/index"
+import {togAppHelp} from "./js/actions/index"
 
 import {connect} from 'react-redux';
 import { Provider } from 'react-redux'
@@ -11,17 +11,6 @@ import { Provider } from 'react-redux'
 function clg(...args) {
     console.log(...args);
 }
-
-// class App extends Component {
-//
-//     render() {
-//         return (
-//             <Provider store={store}>
-//                 <MainAppContainer />
-//             </Provider>
-//         )
-//     }
-// }
 
 class App extends Component {
 
@@ -136,7 +125,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         onHelpClick: () => {
-            dispatch(toggleAppHelp())
+            dispatch(togAppHelp())
         }
     }
 }

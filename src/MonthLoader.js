@@ -3,21 +3,6 @@ import {ViewOnHN} from "./SharedView";
 
 const SEARCH_MO_IDX = 0;
 
-
-// class WHBanner extends Component {
-//     constructor(props) {
-//         super(props);
-//         this.state = {
-//             appHelping: false
-//         };
-//     }
-//     toggleAppHelp() {
-//         this.setState({appHelping: !this.state.appHelping});
-//     }
-//     render() {
-//         return (
-//             <div>
-
 const gMos = window.gMonthlies;
 
 class MonthLoader extends Component {
