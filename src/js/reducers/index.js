@@ -1,5 +1,6 @@
 // src/js/reducers/index.js
 import { combineReducers } from 'redux'
+import monthReducer from './month'
 
 const rootReducer = combineReducers({
     app: appReducer
@@ -17,12 +18,6 @@ function appReducer( state = { helping: false}, action) {
     }
 }
 
-function monthReducer( state = null, action) {
-    switch (action.type) {
-        default:
-            return state
-    }
-}
 function filterReducer( state = null, action) {
     switch (action.type) {
         default:

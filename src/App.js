@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import HelpList from './SharedView'
-import MonthLoader from './MonthLoader'
+import RdxMonthLoader from './MonthLoader'
 import store from "./js/store/index";
 import {togAppHelp} from "./js/actions/index"
 
@@ -26,7 +26,7 @@ class App extends Component {
         <Provider store={store}>
             <div>
                 <RdxBanner/>
-                <MonthLoader/>
+                <RdxMonthLoader/>
                 <ControlPanel/>
                 <JobList/>
             </div>
@@ -44,16 +44,6 @@ function JobList(props) {
     return <p>JobList RSN</p>
 }
 
-
-// function WhoIsHiring() {
-//     return div(
-//         appBanner()
-//         , div( {style: "margin:0px; background:#ffb57d"}
-//             , pickAMonth()
-//             , jobListingLoader() // hidden iFrames where we load HN page for scraping
-//             , controlPanel()
-//             , jobList()))
-// }
 
 const appHelpEntry = [
     "Click any job header to show or hide the full listing."
@@ -85,13 +75,8 @@ const appHelpEntry = [
 class WHBanner extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            appHelping: false
-        };
     }
-    toggleAppHelp() {
-        this.setState({appHelping: !this.state.appHelping});
-    }
+
     render() {
         return (
             <div>
