@@ -9,11 +9,22 @@ class App extends Component {
         <div>
             <WHBanner/>
             <MonthLoader/>
+            <ControlPanel/>
+            <JobList/>
         </div>
 
     );
   }
 }
+
+function ControlPanel( props) {
+    return <p>CPanel RSN</p>
+}
+
+function JobList(props) {
+    return <p>JobList RSN</p>
+}
+
 
 // function WhoIsHiring() {
 //     return div(

@@ -58,7 +58,7 @@ class MonthLoader extends Component {
                 onChange={(e)=>this.changeMonth(e)}/>
             <MonthJobsLoader
                 loadTask={ this.state.loadTask}
-                taskUpdater={ this.taskUpdater }/> 
+                taskUpdater={ this.taskUpdater }/>
         </div>
     }
 }
@@ -87,7 +87,6 @@ class PickAMonth extends Component {
 function unProcessedMonth( monthid) {
     let urls = monthPageUrls( monthid);
 
-    console.log("chya", urls)
     return {
         monthid: monthid
         , pageUrlsRemaining: urls
@@ -102,19 +101,12 @@ function unProcessedMonth( monthid) {
 
 class MonthJobsLoader extends Component {
     render () {
-        console.log("mojload props!", this.props)
-        console.assert(this.props.loadTask)
-        console.assert(this.props.taskUpdater, "moloader")
-        console.log("mojload updater!", this.props.taskUpdater)
-        let mldUpdater = this.props.taskUpdater;
-
-
         return (
             <div>
                 {this.props.loadTask.pageUrlsRemaining[0] ?
                     <PageLoader
                         loadTask={this.props.loadTask}
-                        taskUpdater={(tsk)=> mldUpdater(tsk)}
+                        taskUpdater={ this.props.taskUpdater }
                     /> : <span> "no mas pages"</span>}
             </div>
         )
@@ -123,16 +115,11 @@ class MonthJobsLoader extends Component {
 
 class PageLoader extends Component {
     render () {
-        console.assert(this.props.loadTask.pageUrlsRemaining[0], "no url!")
-        console.log("loading url", this.props.loadTask.pageUrlsRemaining[0])
-        console.assert(this.props.taskUpdater, "pgloader")
-        console.log("pglupd!!!", this.props.taskUpdater, "pgloader")
-        let pglUpdater = this.props.taskUpdater;
         return (
             <iframe src={this.props.loadTask.pageUrlsRemaining[0]}
                     title="HN Page Scraper"
                     onLoad={(e)=>
-                        pglUpdater(scrapeAthings( e.target, this.props.loadTask))}/>
+                        this.props.taskUpdater(scrapeAthings( e.target, this.props.loadTask))}/>
         )
     }
 }
