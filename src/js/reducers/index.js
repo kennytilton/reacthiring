@@ -9,10 +9,12 @@ const rootReducer = combineReducers({
     , jobs: jobsReducer
 })
 
-function appReducer( state = { helping: false}, action) {
+function appReducer( state = {monthDefs: window.gMonthlies
+    , helping: false}, action) {
+
     switch (action.type) {
         case "TOGGLE_APP_HELP":
-            return {helping: !state.helping}
+            return Object.assign( {}, state, {helping: !state.helping});
         default:
             return state
     }

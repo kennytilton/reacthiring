@@ -23,6 +23,7 @@ class MonthLoader extends Component {
             <PickAMonth
                 defmo={this.props.monthid}
                 monthid={this.props.monthid}
+                monthDefs={this.props.monthDefs}
                 onChange={(e)=>this.props.changeMonth(e.target.value)}/>
             {/*<MonthJobsLoader*/}
                 {/*loadTask={ this.state.loadTask}*/}
@@ -33,9 +34,11 @@ class MonthLoader extends Component {
 
 const mapStateToProps = state => {
     // todo: can I just return state.month?
+
     return {
         monthid: state.month.monthid
         , loadTask: state.month.loadTask
+        , monthDefs: state.app.monthDefs
     }
 }
 
@@ -59,7 +62,7 @@ class PickAMonth extends Component {
                 <select className="searchMonth"
                         defaultValue={ this.props.defmo}
                         onChange={(e)=>this.props.onChange(e)}>
-                    {window.gMonthlies.map( (m, x) =>
+                    {this.props.monthDefs.map( (m, x) =>
                         <option key={m.hnId}
                                 value={m.hnId}>
                             {m.desc}
